@@ -217,7 +217,7 @@ static unsigned int decode_base64(unsigned char input[], unsigned char output[])
 **
 ** Extracted from Tasmota SBuffer lib
 ********************************************************************/
-// static inline uint8_t* buf_get_buf(buf_impl* attr)
+// static inline bbyte* buf_get_buf(buf_impl* attr)
 // {
 //     return &attr->bufptr[0];
 // }
@@ -232,10 +232,10 @@ static void buf_set_len(buf_impl* attr, const size_t len)
     }
 }
 
-static size_t buf_add1(buf_impl* attr, const uint8_t data) // append 8 bits value
+static size_t buf_add1(buf_impl* attr, uint32_t data) // append 8 bits value
 {
     if (attr->len < attr->size) {       // do we have room for 1 byte
-        attr->bufptr[attr->len++] = data;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
     }
     return attr->len;
 }
@@ -243,8 +243,8 @@ static size_t buf_add1(buf_impl* attr, const uint8_t data) // append 8 bits valu
 static size_t buf_add2_le(buf_impl* attr, const uint16_t data) // append 16 bits value
 {
     if (attr->len < attr->size - 1) {    // do we have room for 2 bytes
-        attr->bufptr[attr->len++] = data;
-        attr->bufptr[attr->len++] = data >> 8;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 8);
     }
     return attr->len;
 }
@@ -252,8 +252,8 @@ static size_t buf_add2_le(buf_impl* attr, const uint16_t data) // append 16 bits
 static size_t buf_add2_be(buf_impl* attr, const uint16_t data) // append 16 bits value
 {
     if (attr->len < attr->size - 1) {    // do we have room for 2 bytes
-        attr->bufptr[attr->len++] = data >> 8;
-        attr->bufptr[attr->len++] = data;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 8);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
     }
     return attr->len;
 }
@@ -261,9 +261,9 @@ static size_t buf_add2_be(buf_impl* attr, const uint16_t data) // append 16 bits
 static size_t buf_add3_le(buf_impl* attr, const uint32_t data) // append 32 bits value
 {
     if (attr->len < attr->size - 2) {     // do we have room for 4 bytes
-        attr->bufptr[attr->len++] = data;
-        attr->bufptr[attr->len++] = data >> 8;
-        attr->bufptr[attr->len++] = data >> 16;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 8);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 16);
     }
     return attr->len;
 }
@@ -271,9 +271,9 @@ static size_t buf_add3_le(buf_impl* attr, const uint32_t data) // append 32 bits
 size_t buf_add3_be(buf_impl* attr, const uint32_t data) // append 32 bits value
 {
     if (attr->len < attr->size - 2) {     // do we have room for 4 bytes
-        attr->bufptr[attr->len++] = data >> 16;
-        attr->bufptr[attr->len++] = data >> 8;
-        attr->bufptr[attr->len++] = data;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 16);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 8);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
     }
     return attr->len;
 }
@@ -281,10 +281,10 @@ size_t buf_add3_be(buf_impl* attr, const uint32_t data) // append 32 bits value
 static size_t buf_add4_le(buf_impl* attr, const uint32_t data) // append 32 bits value
 {
     if (attr->len < attr->size - 3) {     // do we have room for 4 bytes
-        attr->bufptr[attr->len++] = data;
-        attr->bufptr[attr->len++] = data >> 8;
-        attr->bufptr[attr->len++] = data >> 16;
-        attr->bufptr[attr->len++] = data >> 24;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 8);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 16);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 24);
     }
     return attr->len;
 }
@@ -292,10 +292,10 @@ static size_t buf_add4_le(buf_impl* attr, const uint32_t data) // append 32 bits
 size_t buf_add4_be(buf_impl* attr, const uint32_t data) // append 32 bits value
 {
     if (attr->len < attr->size - 3) {     // do we have room for 4 bytes
-        attr->bufptr[attr->len++] = data >> 24;
-        attr->bufptr[attr->len++] = data >> 16;
-        attr->bufptr[attr->len++] = data >> 8;
-        attr->bufptr[attr->len++] = data;
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 24);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 16);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data >> 8);
+        attr->bufptr[attr->len++] = be_octet_from_u32(data);
     }
     return attr->len;
 }
@@ -304,7 +304,7 @@ static size_t buf_add_buf(buf_impl* attr, buf_impl* attr2)
 {
     if (attr->len + attr2->len <= attr->size) {
         for (int32_t i = 0; i < attr2->len; i++) {
-            attr->bufptr[attr->len++] = attr2->bufptr[i];
+            attr->bufptr[attr->len++] = be_octet_from_u32(attr2->bufptr[i]);
         }
     }
     return attr->len;
@@ -312,27 +312,27 @@ static size_t buf_add_buf(buf_impl* attr, buf_impl* attr2)
 
 static size_t buf_add_raw(buf_impl* attr, const void* buf_raw, int32_t len)
 {
-    uint8_t *buf = (uint8_t*) buf_raw;
+    const bbyte *buf = (const bbyte*) buf_raw;
     if ((len > 0) && (attr->len + len <= attr->size)) {
         for (int32_t i = 0; i < len; i++) {
-            attr->bufptr[attr->len++] = buf[i];
+            attr->bufptr[attr->len++] = be_octet_from_u32(buf[i]);
         }
     }
     return attr->len;
 }
 
-static uint8_t buf_get1(buf_impl* attr, int offset)
+static bbyte buf_get1(buf_impl* attr, int offset)
 {
     if ((offset >= 0) && (offset < attr->len)) {
-        return attr->bufptr[offset];
+        return be_octet_from_u32(attr->bufptr[offset]);
     }
     return 0;
 }
 
-static void buf_set1(buf_impl* attr, size_t offset, uint8_t data)
+static void buf_set1(buf_impl* attr, size_t offset, uint32_t data)
 {
     if (attr->len > 0 && offset < (size_t)attr->len) {
-        attr->bufptr[offset] = data;
+        attr->bufptr[offset] = be_octet_from_u32(data);
     }
 }
 
@@ -350,16 +350,16 @@ static inline bbool buf_room(buf_impl* attr, size_t offset, size_t need)
 static void buf_set2_le(buf_impl* attr, size_t offset, uint16_t data)
 {
     if (buf_room(attr, offset, 2)) {
-        attr->bufptr[offset] = data & 0xFF;
-        attr->bufptr[offset+1] = data >> 8;
+        attr->bufptr[offset] = be_octet_from_u32(data);
+        attr->bufptr[offset+1] = be_octet_from_u32(data >> 8);
     }
 }
 
 static void buf_set2_be(buf_impl* attr, size_t offset, uint16_t data)
 {
     if (buf_room(attr, offset, 2)) {
-        attr->bufptr[offset+1] = data & 0xFF;
-        attr->bufptr[offset] = data >> 8;
+        attr->bufptr[offset+1] = be_octet_from_u32(data);
+        attr->bufptr[offset] = be_octet_from_u32(data >> 8);
     }
 }
 
@@ -382,7 +382,9 @@ static uint16_t buf_get2_be(buf_impl* attr, size_t offset)
 static uint32_t buf_get3_le(buf_impl* attr, size_t offset)
 {
     if (buf_room(attr, offset, 3)) {
-        return attr->bufptr[offset] | (attr->bufptr[offset+1] << 8) | (attr->bufptr[offset+2] << 16);
+        return (uint32_t)attr->bufptr[offset]
+            | ((uint32_t)attr->bufptr[offset+1] << 8)
+            | ((uint32_t)attr->bufptr[offset+2] << 16);
     }
     return 0;
 }
@@ -390,7 +392,9 @@ static uint32_t buf_get3_le(buf_impl* attr, size_t offset)
 static uint32_t buf_get3_be(buf_impl* attr, size_t offset)
 {
     if (buf_room(attr, offset, 3)) {
-        return attr->bufptr[offset+2] | (attr->bufptr[offset+1] << 8) | (attr->bufptr[offset] << 16);
+        return (uint32_t)attr->bufptr[offset+2]
+            | ((uint32_t)attr->bufptr[offset+1] << 8)
+            | ((uint32_t)attr->bufptr[offset] << 16);
     }
     return 0;
 }
@@ -398,46 +402,48 @@ static uint32_t buf_get3_be(buf_impl* attr, size_t offset)
 static void buf_set3_le(buf_impl* attr, size_t offset, uint32_t data)
 {
     if (buf_room(attr, offset, 3)) {
-        attr->bufptr[offset] = data & 0xFF;
-        attr->bufptr[offset+1] = (data >> 8) & 0xFF;
-        attr->bufptr[offset+2] = (data >> 16) & 0xFF;
+        attr->bufptr[offset] = be_octet_from_u32(data);
+        attr->bufptr[offset+1] = be_octet_from_u32(data >> 8);
+        attr->bufptr[offset+2] = be_octet_from_u32(data >> 16);
     }
 }
 
 static void buf_set3_be(buf_impl* attr, size_t offset, uint32_t data)
 {
     if (buf_room(attr, offset, 3)) {
-        attr->bufptr[offset+2] = data & 0xFF;
-        attr->bufptr[offset+1] = (data >> 8) & 0xFF;
-        attr->bufptr[offset] = (data >> 16) & 0xFF;
+        attr->bufptr[offset+2] = be_octet_from_u32(data);
+        attr->bufptr[offset+1] = be_octet_from_u32(data >> 8);
+        attr->bufptr[offset] = be_octet_from_u32(data >> 16);
     }
 }
 
 static void buf_set4_le(buf_impl* attr, size_t offset, uint32_t data)
 {
     if (buf_room(attr, offset, 4)) {
-        attr->bufptr[offset] = data & 0xFF;
-        attr->bufptr[offset+1] = (data >> 8) & 0xFF;
-        attr->bufptr[offset+2] = (data >> 16) & 0xFF;
-        attr->bufptr[offset+3] = data >> 24;
+        attr->bufptr[offset] = be_octet_from_u32(data);
+        attr->bufptr[offset+1] = be_octet_from_u32(data >> 8);
+        attr->bufptr[offset+2] = be_octet_from_u32(data >> 16);
+        attr->bufptr[offset+3] = be_octet_from_u32(data >> 24);
     }
 }
 
 static void buf_set4_be(buf_impl* attr, size_t offset, uint32_t data)
 {
     if (buf_room(attr, offset, 4)) {
-        attr->bufptr[offset+3] = data & 0xFF;
-        attr->bufptr[offset+2] = (data >> 8) & 0xFF;
-        attr->bufptr[offset+1] = (data >> 16) & 0xFF;
-        attr->bufptr[offset] = data >> 24;
+        attr->bufptr[offset+3] = be_octet_from_u32(data);
+        attr->bufptr[offset+2] = be_octet_from_u32(data >> 8);
+        attr->bufptr[offset+1] = be_octet_from_u32(data >> 16);
+        attr->bufptr[offset] = be_octet_from_u32(data >> 24);
     }
 }
 
 static uint32_t buf_get4_le(buf_impl* attr, size_t offset)
 {
     if (buf_room(attr, offset, 4)) {
-        return attr->bufptr[offset] | (attr->bufptr[offset+1] << 8) |
-            (attr->bufptr[offset+2] << 16) | (attr->bufptr[offset+3] << 24);
+        return (uint32_t)attr->bufptr[offset]
+            | ((uint32_t)attr->bufptr[offset+1] << 8)
+            | ((uint32_t)attr->bufptr[offset+2] << 16)
+            | ((uint32_t)attr->bufptr[offset+3] << 24);
     }
     return 0;
 }
@@ -445,8 +451,10 @@ static uint32_t buf_get4_le(buf_impl* attr, size_t offset)
 static uint32_t buf_get4_be(buf_impl* attr, size_t offset)
 {
     if (buf_room(attr, offset, 4)) {
-        return attr->bufptr[offset+3] | (attr->bufptr[offset+2] << 8) |
-            (attr->bufptr[offset+1] << 16) | (attr->bufptr[offset] << 24);
+        return (uint32_t)attr->bufptr[offset+3]
+            | ((uint32_t)attr->bufptr[offset+2] << 8)
+            | ((uint32_t)attr->bufptr[offset+1] << 16)
+            | ((uint32_t)attr->bufptr[offset] << 24);
     }
     return 0;
 }
@@ -468,9 +476,9 @@ static bbool buf_equals(buf_impl* buf1, buf_impl* buf2)
     return btrue;
 }
 
-static uint8_t asc2byte(char chr)
+static bbyte asc2byte(char chr)
 {
-    uint8_t rVal = 0;
+    bbyte rVal = 0;
     if (isdigit(chr)) { rVal = chr - '0'; }
     else if (chr >= 'A' && chr <= 'F') { rVal = chr + 10 - 'A'; }
     else if (chr >= 'a' && chr <= 'f') { rVal = chr + 10 - 'a'; }
@@ -480,7 +488,7 @@ static uint8_t asc2byte(char chr)
 // does not check if there is enough room before hand, truncated if buffer too small
 static void buf_add_hex(buf_impl* attr, const char *hex, size_t len)
 {
-    uint8_t val;
+    bbyte val;
     for (; len > 1; len -= 2) {
         val = asc2byte(*hex++) << 4;
         val |= asc2byte(*hex++);
@@ -586,7 +594,7 @@ void bytes_realloc(bvm *vm, buf_impl * attr, size_t size)
     if (!attr->fixed && size < 4) { size = 4; }
     if (size > vm->bytesmaxsize) { size = vm->bytesmaxsize; }
     size_t oldsize = attr->bufptr ? attr->size : 0;
-    attr->bufptr = (uint8_t*) be_realloc(vm, attr->bufptr, oldsize, size);  /* malloc */
+    attr->bufptr = (bbyte*) be_realloc(vm, attr->bufptr, oldsize, size);  /* malloc */
     attr->size = size;
     if (!attr->bufptr) {
         attr->len = 0; /* allocate a new buffer */
@@ -747,8 +755,8 @@ buf_impl bytes_check_data(bvm *vm, size_t add_size) {
     return attr;
 }
 
-size_t be_bytes_tohex(char * out, size_t outsz, const uint8_t * in, size_t insz) {
-  const uint8_t * pin = in;
+size_t be_bytes_tohex(char * out, size_t outsz, const bbyte * in, size_t insz) {
+    const bbyte * pin = in;
   char * pout = out;
   for (; pin < in + insz; pout += 2, pin++) {
     pout[0] = hex[((*pin)>>4) & 0xF];
@@ -918,25 +926,25 @@ static int m_get(bvm *vm, bbool sign)
         if (idx < 0) {
             vsize = 0;                  /* if still negative, then invalid, return 0 */
         }
-        int ret = 0;
+        bint ret = 0;
         switch (vsize) {
             case 0:     break;
             case -1:    /* fallback below */
             case 1:     ret = buf_get1(&attr, idx);
-                        if (sign) { ret = (int8_t)(uint8_t) ret; }
+                        if (sign) { ret = be_octet_to_sbyte(be_octet_from_u32((uint32_t)ret)); }
                         break;
             case 2:     ret = buf_get2_le(&attr, idx);
                         if (sign) { ret = (int16_t)(uint16_t) ret; }
                         break;
             case 3:     ret = buf_get3_le(&attr, idx);
-                        if (sign && (ret & 0x800000)) { ret = ret | 0xFF000000; }
+                        if (sign && ((uint32_t)ret & 0x800000u)) { ret -= (bint)0x1000000u; }
                         break;
             case 4:     ret = buf_get4_le(&attr, idx);    break;
             case -2:    ret = buf_get2_be(&attr, idx);
                         if (sign) { ret = (int16_t)(uint16_t) ret; }
                         break;
             case -3:    ret = buf_get3_be(&attr, idx);
-                        if (sign && (ret & 0x800000)) { ret = ret | 0xFF000000; }
+                        if (sign && ((uint32_t)ret & 0x800000u)) { ret -= (bint)0x1000000u; }
                         break;
             case -4:    ret = buf_get4_be(&attr, idx);    break;
             default:    be_raise(vm, "type_error", "size must be -4, -3, -2, -1, 0, 1, 2, 3 or 4.");
@@ -1118,7 +1126,7 @@ static int m_setbytes(bvm *vm)
     if (argc >=3 && be_isint(vm, 2) && (be_isbytes(vm, 3))) {
         int32_t idx = be_toint(vm, 2);
         size_t from_len_total;
-        const uint8_t* buf_ptr = (const uint8_t*) be_tobytes(vm, 3, &from_len_total);
+        const bbyte* buf_ptr = (const bbyte*) be_tobytes(vm, 3, &from_len_total);
         if (idx < 0) {
             idx = attr.len + idx;       /* if index is negative, count from end */
         }
@@ -1198,14 +1206,14 @@ static int m_reverse(bvm *vm)
         if (grouplen == 1) {
             /* fast version if simple byte inversion */
             for (int32_t i = idx, j = idx + len -1; i < j; i++, j--) {
-                uint8_t temp = attr.bufptr[i];
+                bbyte temp = attr.bufptr[i];
                 attr.bufptr[i] = attr.bufptr[j];
                 attr.bufptr[j] = temp;
             }
         } else {
             for (int32_t i = idx, j = idx + len - grouplen; i < j; i += grouplen, j -= grouplen) {
                 for (int32_t k = 0; k < grouplen; k++) {
-                    uint8_t temp = attr.bufptr[i+k];
+                    bbyte temp = attr.bufptr[i+k];
                     attr.bufptr[i+k] = attr.bufptr[j+k];
                     attr.bufptr[j+k] = temp;
                 }
@@ -1339,7 +1347,7 @@ static int m_merge(bvm *vm)
     buf_impl attr = m_read_attributes(vm, 1); /* no resize yet */
     check_ptr(vm, &attr);
     if (argc >= 2 && (be_isbytes(vm, 2) || be_isstring(vm, 2))) {
-        const uint8_t * buf;
+        const bbyte * buf;
         int32_t buf_len;
         if (be_isbytes(vm, 2)) {
             buf_impl attr2 = m_read_attributes(vm, 2);
@@ -1347,7 +1355,7 @@ static int m_merge(bvm *vm)
             buf = attr2.bufptr;
             buf_len = attr2.len;
         } else {
-            buf = (const uint8_t *)be_tostring(vm, 2);
+            buf = (const bbyte *)be_tostring(vm, 2);
             buf_len = strlen((const char *)buf);
         }
 
@@ -1428,7 +1436,7 @@ static int m_appendhex(bvm *vm)
         check_ptr(vm, &attr2);
         bytes_resize(vm, &attr, attr.len + attr2.len * 2); /* resize */
         
-        for (const uint8_t * pin = attr2.bufptr; pin < attr2.bufptr + attr2.len; pin++) {
+        for (const bbyte * pin = attr2.bufptr; pin < attr2.bufptr + attr2.len; pin++) {
             buf_add1(&attr, hex[((*pin)>>4) & 0xF]);
             buf_add1(&attr, hex[ (*pin)     & 0xF]);
         }
@@ -1757,7 +1765,7 @@ static int m_getbits(bvm *vm)
         while (len_bits > 0) {
             int block_bits = 8 - offset_bits;   /* how many bits to read in the current block (block = byte) */
             if (block_bits > len_bits) { block_bits = len_bits; }
-            uint8_t byte_val = buf_get1(&attr, offset_bytes);
+            bbyte byte_val = buf_get1(&attr, offset_bytes);
             uint32_t mask_val = (1u << block_bits) - 1;
             if (big_endian) {
                 bit_shift = 8 - offset_bits - block_bits;   /* non-zero only on the last partial byte */
@@ -1818,9 +1826,9 @@ static int m_setbits(bvm *vm)
                 extracted = val & mask_val;
                 val >>= block_bits;
             }
-            uint8_t cur = buf_get1(&attr, offset_bytes);
+            bbyte cur = buf_get1(&attr, offset_bytes);
             buf_set1(&attr, offset_bytes,
-                     (uint8_t)((cur & ((mask_val << offset_bits) ^ 0xFF)) | (extracted << offset_bits)));
+                     ((cur & ((mask_val << offset_bits) ^ 0xFF)) | (extracted << offset_bits)));
             offset_bits = 0;                /* start at full next byte */
             offset_bytes += 1;
         }

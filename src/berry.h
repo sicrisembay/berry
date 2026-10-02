@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <limits.h>
 
 #include "berry_conf.h"
 
@@ -48,7 +49,27 @@ extern "C" {
 #endif
 #define BE_INT_FORMAT           "%" BE_INT_FMTLEN "d" /**< BE_INT_FORMAT */
 
-typedef uint8_t bbyte;             /**< bbyte */
+#if CHAR_BIT == 8
+typedef uint8_t bbyte;
+typedef int8_t bsbyte;
+#elif CHAR_BIT == 16
+typedef unsigned char bbyte;
+typedef int16_t bsbyte;
+#else
+#error "Berry requires 8-bit bytes or a supported 16-bit C byte port."
+#endif
+
+static inline bbyte be_octet_from_u32(uint32_t value)
+{
+  return (bbyte)(value & 0xFFu);
+}
+
+static inline bsbyte be_octet_to_sbyte(bbyte value)
+{
+  uint32_t octet = (uint32_t)value & 0xFFu;
+  return (bsbyte)((octet & 0x80u) ? ((int32_t)octet - 0x100) : (int32_t)octet);
+}
+
 typedef BE_INTEGER bint;           /**< bint */
 typedef unsigned BE_INTEGER buint; /**< buint (unsigned bint, for well-defined wrap-around arithmetic) */
 

@@ -184,8 +184,8 @@ BERRY_API void* be_move_to_aligned(bvm *vm, void *ptr, size_t size) {
 }
 
 /* Special allocator for structures under 32 bytes */
-typedef uint8_t mem16[16];      /* memory line of 16 bytes */
-typedef uint8_t mem32[32];      /* memory line of 32 bytes */
+typedef bbyte mem16[16];        /* memory line of 16 logical octets */
+typedef bbyte mem32[32];        /* memory line of 32 logical octets */
 #define POOL16_SLOTS   31
 #define POOL16_BITMAP_FULL  ((1UL<<POOL16_SLOTS)-1)      /* 31 bits set to 1 - 0x7FFFFFFF */
 #define POOL32_SLOTS   15
@@ -268,7 +268,7 @@ static void free_from_pool(bvm *vm, void* ptr, size_t old_size) {
     if (old_size <= POOL16_SIZE) {
         gc16_t* pool16 = vm->gc.pool16;
         while (pool16) {
-            int32_t offset = (uint8_t*)ptr - (uint8_t*) &pool16->lines[0];
+            int32_t offset = (bbyte*)ptr - (bbyte*) &pool16->lines[0];
             // serial_debug("free_from_pool ptr=%p pool=%p offset=%i\n", ptr,pool16, offset);
             if ((offset >= 0) && (offset < POOL16_SLOTS*POOL16_SIZE) && ((offset & 0x0F) == 0)) {
                 int bit = offset >> 4;
@@ -283,7 +283,7 @@ static void free_from_pool(bvm *vm, void* ptr, size_t old_size) {
     else if (old_size <= POOL32_SIZE) {
         gc32_t* pool32 = vm->gc.pool32;
         while (pool32) {
-            int32_t offset = (uint8_t*)ptr - (uint8_t*) &pool32->lines[0];
+            int32_t offset = (bbyte*)ptr - (bbyte*) &pool32->lines[0];
             // serial_debug("free_from_pool pool=%p offset=%i\n", pool32, offset);
             if ((offset >= 0) && (offset < POOL32_SLOTS*POOL32_SIZE) && ((offset & 0x1F) == 0)) {
                 int bit = offset >> 5;

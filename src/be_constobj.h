@@ -35,7 +35,7 @@ extern "C" {
         .sub = NULL,                                                    \
         ._class = (bclass*) &be_class_bytes,                            \
         .members = {                                                    \
-            {.v.c = (const void*) & (const uint8_t[]) { __VA_ARGS__ },  \
+            {.v.c = (const void*) & (const bbyte[]) { __VA_ARGS__ },  \
             .type = BE_COMPTR },                                        \
             be_const_int(sizeof(#_name) / 2),                           \
             be_const_int(BYTES_SIZE_SOLIDIFIED)                         \
@@ -50,7 +50,7 @@ extern "C" {
         .sub = NULL,                                                    \
         ._class = (bclass*) &be_class_bytes,                            \
         .members = {                                                    \
-            {.v.c = (const void*) & (const uint8_t[]) { 0x00 },         \
+            {.v.c = (const void*) & (const bbyte[]) { 0x00 },         \
             .type = BE_COMPTR },                                        \
             be_const_int(0),                                            \
             be_const_int(BYTES_SIZE_SOLIDIFIED)                         \

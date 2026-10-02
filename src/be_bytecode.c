@@ -38,9 +38,9 @@ static void bytecode_error(bvm *vm, const char *msg)
     be_raise(vm, "bytecode_error", msg);
 }
 
-static uint8_t vm_sizeinfo(void)
+static bbyte vm_sizeinfo(void)
 {
-    uint8_t res = sizeof(bint) == 8;
+    bbyte res = sizeof(bint) == 8;
     res |= (sizeof(breal) == 8) << 1;
     return res;
 }
@@ -49,32 +49,33 @@ static uint8_t vm_sizeinfo(void)
 #if BE_USE_BYTECODE_SAVER
 static void save_proto(bvm *vm, void *fp, bproto *proto);
 
-static void save_byte(void *fp, uint8_t value)
+static void save_byte(void *fp, uint32_t value)
 {
-    be_fwrite(fp, &value, 1);
+    bbyte octet = be_octet_from_u32(value);
+    be_fwrite(fp, &octet, 1);
 }
 
 static void save_word(void *fp, uint16_t value)
 {
-    uint8_t buffer[2];
-    buffer[0] = value & 0xff;
-    buffer[1] = value >> 8;
+    bbyte buffer[2];
+    buffer[0] = be_octet_from_u32(value);
+    buffer[1] = be_octet_from_u32(value >> 8);
     be_fwrite(fp, buffer, sizeof(buffer));
 }
 
 static void save_long(void *fp, uint32_t value)
 {
-    uint8_t buffer[4];
-    buffer[0] = value & 0xff;
-    buffer[1] = (value >> 8) & 0xff;
-    buffer[2] = (value >> 16) & 0xff;
-    buffer[3] = (value >> 24) & 0xff;
+    bbyte buffer[4];
+    buffer[0] = be_octet_from_u32(value);
+    buffer[1] = be_octet_from_u32(value >> 8);
+    buffer[2] = be_octet_from_u32(value >> 16);
+    buffer[3] = be_octet_from_u32(value >> 24);
     be_fwrite(fp, buffer, sizeof(buffer));
 }
 
 static void save_header(void *fp)
 {
-    uint8_t buffer[8] = { 0 };
+    bbyte buffer[8] = { 0 };
     buffer[0] = MAGIC_NUMBER1;
     buffer[1] = MAGIC_NUMBER2;
     buffer[2] = MAGIC_NUMBER3;
@@ -180,7 +181,7 @@ static void save_class(bvm *vm, void *fp, bclass *c)
 
 static void save_value(bvm *vm, void *fp, bvalue *v)
 {
-    save_byte(fp, (uint8_t)var_primetype(v)); /* type */
+    save_byte(fp, (uint32_t)var_primetype(v)); /* type */
     switch (var_primetype(v)) {
     case BE_INT: save_int(fp, var_toint(v)); break;
     case BE_REAL: save_real(fp, var_toreal(v)); break;
@@ -333,23 +334,23 @@ static void load_bytes(bvm *vm, void *fp, void *buf, size_t len)
     }
 }
 
-static uint8_t load_byte(bvm *vm, void *fp)
+static bbyte load_byte(bvm *vm, void *fp)
 {
-    uint8_t buffer[1];
+    bbyte buffer[1];
     load_bytes(vm, fp, buffer, sizeof(buffer));
     return buffer[0];
 }
 
 static uint16_t load_word(bvm *vm, void *fp)
 {
-    uint8_t buffer[2];
+    bbyte buffer[2];
     load_bytes(vm, fp, buffer, sizeof(buffer));
     return ((uint16_t)buffer[1] << 8) | buffer[0];
 }
 
 static uint32_t load_long(bvm *vm, void *fp)
 {
-    uint8_t buffer[4];
+    bbyte buffer[4];
     load_bytes(vm, fp, buffer, sizeof(buffer));
     return ((uint32_t)buffer[3] << 24)
         | ((uint32_t)buffer[2] << 16)
@@ -372,7 +373,7 @@ static int load_count(bvm *vm, void *fp, const char *what)
 static int load_head(bvm *vm, void *fp)
 {
     int res;
-    uint8_t buffer[8] = { 0 };
+    bbyte buffer[8] = { 0 };
     if (be_fread(fp, buffer, sizeof(buffer)) != sizeof(buffer)) {
         bytecode_error(vm, "truncated bytecode header.");
     }
@@ -391,8 +392,8 @@ bbool be_bytecode_check(const char *path)
 {
     void *fp = be_fopen(path, "rb");
     if (fp) {
-        uint8_t buffer[3], rb;
-        rb = (uint8_t)be_fread(fp, buffer, 3);
+        bbyte buffer[3];
+        size_t rb = be_fread(fp, buffer, 3);
         be_fclose(fp);
         /* check magic number */
         return rb == 3 &&
@@ -495,7 +496,7 @@ static void load_class(bvm *vm, void *fp, bvalue *v, int version)
 
 static void load_value(bvm *vm, void *fp, bvalue *v, int version)
 {
-    uint8_t type = load_byte(vm, fp);
+    bbyte type = load_byte(vm, fp);
     switch (type) {
     case BE_NIL: var_setnil(v); break;
     case BE_INT: var_setint(v, load_int(vm, fp)); break;

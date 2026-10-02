@@ -671,7 +671,7 @@ static void m_compact_class(bvm *vm, bbool str_literal, const bclass *cla, void*
 
                 if ((gc_isconst(cl)) || (pr->varg & BE_VA_SHARED_KTAB) || (pr->varg & BE_VA_NOCOMPACT)) { continue; }
 
-                uint8_t mapping_array[MAX_KTAB_SIZE];
+                bbyte mapping_array[MAX_KTAB_SIZE];
                 // iterate in proto ktab to get the index in the global ktab
                 for (int i = 0; i < pr->nconst; i++) {
                     for (int j = 0; j < ktab_size; j++) {

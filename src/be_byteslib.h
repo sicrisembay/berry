@@ -26,16 +26,16 @@
 typedef struct buf_impl {
   int32_t size;               // size in bytes of the buffer
   int32_t len;                // current size of the data in buffer. Invariant: len <= size
-  uint8_t *bufptr;            // the actual data
+  bbyte *bufptr;              // the actual data
   int32_t prev_size;          // previous value read from the instance
   int32_t prev_len;           // previous value read from the instance
-  uint8_t *prev_bufptr;
+  bbyte *prev_bufptr;
   bbool   fixed;              // is size fixed? (actually encoded as negative size)
   bbool   mapped;
   bbool   solidified;
 } buf_impl;
 
-size_t be_bytes_tohex(char * out, size_t outsz, const uint8_t * in, size_t insz);
+size_t be_bytes_tohex(char * out, size_t outsz, const bbyte * in, size_t insz);
 
 #if BE_USE_PRECOMPILED_OBJECT
 #include "../generate/be_const_bytes.h"

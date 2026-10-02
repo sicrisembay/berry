@@ -25,7 +25,7 @@
 #define IBx_BITS                (IRKC_BITS + IRKB_BITS)
 
 /* basic field operation */
-#define INS_MASK(pos, bits)     ((binstruction)((1 << (bits)) - 1) << (pos))
+#define INS_MASK(pos, bits)     (((binstruction)(((binstruction)1 << (bits)) - 1)) << (pos))
 #define INS_GETx(i, mask, pos)  cast_int(((binstruction)(i) & (mask)) >> (pos))
 #define INS_SETx(v, mask, pos)  (((binstruction)(v) << (pos)) & (mask))
 

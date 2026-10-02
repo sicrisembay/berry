@@ -681,7 +681,7 @@ newframe: /* a new call frame */
             } else if (var_isinstance(a)) {
                 ins_binop(vm, "+", ins);
             } else if (var_iscomptr(a) && var_isint(b)) {
-                uint8_t * p = (uint8_t*) var_toobj(a);
+                bbyte * p = (bbyte*) var_toobj(a);
                 p += var_toint(b);
                 var_setcomptr(dst, p);
             } else {
@@ -699,7 +699,7 @@ newframe: /* a new call frame */
             } else if (var_isinstance(a)) {
                 ins_binop(vm, "-", ins);
             } else if (var_iscomptr(a) && var_isint(b)) {
-                uint8_t * p = (uint8_t*) var_toobj(a);
+                bbyte * p = (bbyte*) var_toobj(a);
                 p -= var_toint(b);
                 var_setcomptr(dst, p);
             } else {
@@ -1059,7 +1059,7 @@ newframe: /* a new call frame */
                 reg = vm->reg;
                 var_setstr(RA(), s);
             } else if (var_iscomptr(b) && var_isint(c)) {
-                uint8_t * p = var_toobj(b);
+                bbyte * p = var_toobj(b);
                 var_setint(RA(), p[var_toint(c)]);
             } else {
                 vm_error(vm, "type_error",
@@ -1082,7 +1082,7 @@ newframe: /* a new call frame */
                 vm->top -= 4;
                 reg = vm->reg;
             } else if (var_iscomptr(a) && var_isint(b) && var_isint(c)) {
-                uint8_t * p = var_toobj(a);
+                bbyte * p = var_toobj(a);
                 p[var_toint(b)] = var_toint(c);
             } else {
                 vm_error(vm, "type_error",
