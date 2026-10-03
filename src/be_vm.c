@@ -57,7 +57,7 @@
 
 #if BE_USE_PERF_COUNTERS
   #define VM_HEARTBEAT() \
-    if ((vm->counter_ins & ((1<<(BE_VM_OBSERVABILITY_SAMPLING - 1))-1) ) == 0) { /* call every 2^BE_VM_OBSERVABILITY_SAMPLING instructions */    \
+        if ((vm->counter_ins & (((uint32_t)1u << (BE_VM_OBSERVABILITY_SAMPLING - 1)) - (uint32_t)1u)) == 0) { /* call every 2^BE_VM_OBSERVABILITY_SAMPLING instructions */    \
         if (vm->obshook != NULL)                                                    \
             (*vm->obshook)(vm, BE_OBS_VM_HEARTBEAT, vm->counter_ins);               \
     }

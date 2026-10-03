@@ -7,6 +7,8 @@
 ********************************************************************/
 #include "be_vector.h"
 #include "be_mem.h"
+#include <limits.h>
+#include <stdint.h>
 #include <string.h>
 
 /* initialize a vector, the vector structure itself is usually allocated
@@ -140,12 +142,14 @@ static int binary_search(int value)
 
 static int nextpow(int value)
 {
-    value |= value >> 1;
-    value |= value >> 2;
-    value |= value >> 4;
-    value |= value >> 8;
-    value |= value >> 16;
-    return value + 1;
+    uint32_t rounded = (uint32_t)value;
+    rounded |= rounded >> 1;
+    rounded |= rounded >> 2;
+    rounded |= rounded >> 4;
+    rounded |= rounded >> 8;
+    rounded |= rounded >> 16;
+    ++rounded;
+    return rounded > INT_MAX ? INT_MAX : (int)rounded;
 }
 
 int be_nextsize(int size)

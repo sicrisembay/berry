@@ -55,8 +55,8 @@
 #define upval_index(v)          ((v) & 0xFF)
 #define upval_target(v)         ((bbyte)(((v) >> 8) & 0xFF))
 #define upval_instack(v)        ((bbyte)(((v) >> 16) != 0))
-#define upval_desc(i, t, s)     (((i) & 0xFF) | (((t) & 0xFF) << 8) \
-                                | (((s) != 0) << 16))
+#define upval_desc(i, t, s)     (((uint32_t)(i) & 0xFFu) | (((uint32_t)(t) & 0xFFu) << 8) \
+                                | (((uint32_t)((s) != 0) & 0xFFu) << 16))
 
 #define match_id(parser, s)     ((s) = _match_id(parser))
 

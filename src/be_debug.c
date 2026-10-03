@@ -81,13 +81,13 @@ void be_print_inst(binstruction ins, int pc, void* fout)
                 isKB(ins) ? 'K' : 'R', IGET_RKB(ins) & KR_MASK);
         break;
     case OP_JMP:
-        logbuf("%s\t\t#%.4X", opc2str(op), IGET_sBx(ins) + pc + 1);
+        logbuf("%s\t\t#%.4lX", opc2str(op), (unsigned long)(IGET_sBx(ins) + pc + 1));
         break;
     case OP_JMPT: case OP_JMPF:
-        logbuf("%s\tR%d\t#%.4X", opc2str(op), IGET_RA(ins), IGET_sBx(ins) + pc + 1);
+        logbuf("%s\tR%d\t#%.4lX", opc2str(op), IGET_RA(ins), (unsigned long)(IGET_sBx(ins) + pc + 1));
         break;
     case OP_LDINT:
-        logbuf("%s\tR%d\t%d", opc2str(op), IGET_RA(ins), IGET_sBx(ins));
+        logbuf("%s\tR%d\t%ld", opc2str(op), IGET_RA(ins), (long)IGET_sBx(ins));
         break;
     case OP_LDBOOL:
         logbuf("%s\tR%d\t%d\t%d", opc2str(op),  IGET_RA(ins), IGET_RKB(ins), IGET_RKC(ins));
@@ -127,7 +127,7 @@ void be_print_inst(binstruction ins, int pc, void* fout)
         if (IGET_RA(ins)) {
             logbuf("%s\t%d\t%d", opc2str(op), IGET_RA(ins), IGET_Bx(ins));
         } else {
-            logbuf("%s\t%d\t#%.4X", opc2str(op), IGET_RA(ins), IGET_sBx(ins) + pc + 1);
+            logbuf("%s\t%d\t#%.4lX", opc2str(op), IGET_RA(ins), (unsigned long)(IGET_sBx(ins) + pc + 1));
         }
         break;
     case OP_CATCH:

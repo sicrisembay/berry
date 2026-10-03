@@ -22,7 +22,7 @@
 #define INDENT_CHAR     ' '
 
 /* Security: Maximum JSON string length to prevent memory exhaustion attacks */
-#define MAX_JSON_STRING_LEN  (1024 * 1024)  /* 1MB limit */
+#define MAX_JSON_STRING_LEN  (1024UL * 1024UL)  /* 1MB limit */
 
 static const char* parser_value(bvm *vm, const char *json);
 static void value_dump(bvm *vm, int *indent, int idx, int fmt);

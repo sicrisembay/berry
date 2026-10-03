@@ -42,7 +42,7 @@
  * harm, so we limit the maximum size.
  * Default: 32kb
  **/
-#define BE_BYTES_MAX_SIZE               (32*1024)   /* 32 kb default value */
+#define BE_BYTES_MAX_SIZE               (32UL*1024UL)   /* 32 kb default value */
 
 /* Macro: BE_USE_PRECOMPILED_OBJECT
  * Use precompiled objects to avoid creating these objects at

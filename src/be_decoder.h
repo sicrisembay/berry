@@ -30,11 +30,11 @@
 #define INS_SETx(v, mask, pos)  (((binstruction)(v) << (pos)) & (mask))
 
 /* instruction operation */
-#define isK(v)                  (((v) & (1 << (IRKB_BITS - 1))) != 0)
-#define setK(v)                 ((v) | (1 << (IRKB_BITS - 1)))
+#define isK(v)                  ((((binstruction)(v)) & ((binstruction)1u << (IRKB_BITS - 1))) != (binstruction)0)
+#define setK(v)                 ((v) | ((binstruction)1u << (IRKB_BITS - 1)))
 #define KR2idx(v)               ((v) & 0xFF)
-#define isKB(v)                 (((v) & (1 << (IRA_POS - 1))) != 0)
-#define isKC(v)                 (((v) & (1 << (IRKB_POS - 1))) != 0)
+#define isKB(v)                 ((((binstruction)(v)) & ((binstruction)1u << (IRA_POS - 1))) != (binstruction)0)
+#define isKC(v)                 ((((binstruction)(v)) & ((binstruction)1u << (IRKB_POS - 1))) != (binstruction)0)
 
 /* define masks and limit values */
 #define IOP_MASK                INS_MASK(IOP_POS, IOP_BITS)

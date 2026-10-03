@@ -1,11 +1,25 @@
 #include <limits.h>
 #include <stdint.h>
 #include "berry.h"
+#include "be_decoder.h"
 #include "be_string.h"
 
 #if CHAR_BIT != 8 && CHAR_BIT != 16
 #error "Unsupported C byte width for Berry octet tests."
 #endif
+
+typedef char operand_b_constant_flag[
+    isKB((binstruction)0x00020000UL) ? 1 : -1
+];
+typedef char operand_b_register_flag[
+    !isKB((binstruction)0x00010000UL) ? 1 : -1
+];
+typedef char bytes_limit_is_32k[
+    BE_BYTES_MAX_SIZE == 32768UL ? 1 : -1
+];
+typedef char heartbeat_mask_uses_32_bits[
+    (((uint32_t)1u << (BE_VM_OBSERVABILITY_SAMPLING - 1)) - 1u) == 0x0007FFFFUL ? 1 : -1
+];
 
 #if CHAR_BIT == 16
 typedef char string_limit_fits_length[
