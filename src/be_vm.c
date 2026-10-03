@@ -1060,7 +1060,7 @@ newframe: /* a new call frame */
                 var_setstr(RA(), s);
             } else if (var_iscomptr(b) && var_isint(c)) {
                 bbyte * p = var_toobj(b);
-                var_setint(RA(), p[var_toint(c)]);
+                var_setint(RA(), be_octet_from_u32(p[var_toint(c)]));
             } else {
                 vm_error(vm, "type_error",
                     "value '%s' does not support subscriptable",
@@ -1083,7 +1083,7 @@ newframe: /* a new call frame */
                 reg = vm->reg;
             } else if (var_iscomptr(a) && var_isint(b) && var_isint(c)) {
                 bbyte * p = var_toobj(a);
-                p[var_toint(b)] = var_toint(c);
+                p[var_toint(b)] = be_octet_from_u32((uint32_t)var_toint(c));
             } else {
                 vm_error(vm, "type_error",
                     "value '%s' does not support index assignment",

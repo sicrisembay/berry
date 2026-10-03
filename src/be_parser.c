@@ -501,7 +501,7 @@ static void new_var(bparser *parser, bstring *name, bexpdesc *var)
         if (var->v.idx < 0) {
             var->v.idx = be_global_new(parser->vm, name);
         }
-        if (var->v.idx > (int)IBx_MASK) {
+        if (var->v.idx < 0 || (uint32_t)var->v.idx > IBx_MASK) {
             push_error(parser,
                 "too many global variables (in '%s')", str(name));
         }

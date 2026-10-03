@@ -1,9 +1,20 @@
 #include <limits.h>
 #include <stdint.h>
 #include "berry.h"
+#include "be_string.h"
 
 #if CHAR_BIT != 8 && CHAR_BIT != 16
 #error "Unsupported C byte width for Berry octet tests."
+#endif
+
+#if CHAR_BIT == 16
+typedef char string_limit_fits_length[
+    BE_STRING_MAX_LEN == INT_MAX ? 1 : -1
+];
+#else
+typedef char string_limit_preserves_host_cap[
+    BE_STRING_MAX_LEN == 16777216u ? 1 : -1
+];
 #endif
 
 int main(void)

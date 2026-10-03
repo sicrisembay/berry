@@ -8,9 +8,11 @@
 #ifndef BE_STRING_H
 #define BE_STRING_H
 
+#include <limits.h>
 #include "be_object.h"
 
 #define SHORT_STR_MAX_LEN   64
+#define BE_STRING_MAX_LEN   ((size_t)(INT_MAX < 16777216L ? INT_MAX : 16777216L))
 
 typedef struct {
     bstring_header;

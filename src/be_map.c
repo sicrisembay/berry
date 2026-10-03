@@ -31,7 +31,7 @@
 
 #define datasize(size)      ((size) * sizeof(bmapnode))
 
-#define LASTNODE            ((1 << 24) - 1)
+#define LASTNODE            ((uint32_t)0x00FFFFFFUL)
 
 static int map_nextsize(int size)
 {
@@ -39,7 +39,7 @@ static int map_nextsize(int size)
     if (size < LASTNODE) {
         return be_nextsize(size);
     }
-    return LASTNODE + 1;
+    return (int)(LASTNODE + 1UL);
 }
 
 static uint32_t hashptr(void *p)
@@ -125,7 +125,8 @@ static int eqnode(bvm *vm, bmapnode *node, bvalue *key, uint32_t hash)
 
 static bmapnode* findprev(bmap *map, bmapnode *list, bmapnode *slot)
 {
-    int n, pos = pos(map, slot);
+    uint32_t n;
+    int pos = pos(map, slot);
     bmapnode *prev = list;
     for (;;) {
         n = next(prev);
@@ -186,7 +187,7 @@ static bmapnode* find(bvm *vm, bmap *map, bvalue *key, uint32_t hash)
         return NULL;
     }
     while (!eqnode(vm, slot, key, hash)) {
-        int n = next(slot);
+        uint32_t n = next(slot);
         if (n == LASTNODE) {
             return NULL;
         }
@@ -286,7 +287,7 @@ int be_map_remove(bvm *vm, bmap *map, bvalue *key)
     } else { /* the node will be remove is not first-node */
         bmapnode *prev = slot;
         for (;;) { /* find the previous node */
-            int n = next(prev);
+            uint32_t n = next(prev);
             slot = pos2slot(map, n);
             if (slot == NULL) { /* node not found */
                 return bfalse;

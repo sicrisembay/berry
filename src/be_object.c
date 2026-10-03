@@ -54,9 +54,9 @@ extern const bcstring be_const_str_ptr;
 extern const bcstring be_const_str_invalid_type;
 #endif
 
+#if BE_USE_PRECOMPILED_OBJECT
 bstring* be_vtype2bstring(bvalue *v)
 {
-#if BE_USE_PRECOMPILED_OBJECT
     switch(var_primetype(v)) {
     case BE_NIL: return (bstring*) &be_const_str_nil;
     case BE_INT: return (bstring*) &be_const_str_int;
@@ -75,10 +75,8 @@ bstring* be_vtype2bstring(bvalue *v)
     case BE_COMPTR: return (bstring*) &be_const_str_ptr;
     default: return (bstring*) &be_const_str_invalid_type;
     }
-#else
-    return be_newstr(vm, be_vtype2str(v));
-#endif
 }
+#endif
 
 bvalue* be_indexof(bvm *vm, int idx)
 {

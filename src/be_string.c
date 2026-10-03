@@ -161,8 +161,6 @@ void be_string_deleteall(bvm *vm)
 /* Hard cap on string length. Well above any plausible string on an
  * embedded target, but small enough that header + len + 1 cannot
  * overflow size_t and len fits in blstring.llen (int). */
-#define BE_STRING_MAX_LEN  (16 * 1024 * 1024)  /* 16 MiB */
-
 static bstring* createstrobj(bvm *vm, size_t len, int islong)
 {
     if (len > BE_STRING_MAX_LEN) {

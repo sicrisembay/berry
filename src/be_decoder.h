@@ -43,8 +43,8 @@
 #define IRKC_MASK               INS_MASK(IRKC_POS, IRKC_BITS)
 #define IAx_MASK                INS_MASK(0, IAx_BITS)
 #define IBx_MASK                INS_MASK(0, IBx_BITS)
-#define IsBx_MAX                cast_int(IBx_MASK >> 1)
-#define IsBx_MIN                cast_int(-IsBx_MAX - 1)
+#define IsBx_MAX                ((int32_t)(IBx_MASK >> 1))
+#define IsBx_MIN                (-IsBx_MAX - 1)
 
 /* mask for K/R values */
 #define KR_MASK                 ((1 << (IRKB_BITS-1)) - 1)
@@ -55,7 +55,7 @@
 #define IGET_RKB(i)             INS_GETx(i, IRKB_MASK, IRKB_POS)
 #define IGET_RKC(i)             INS_GETx(i, IRKC_MASK, IRKC_POS)
 #define IGET_Bx(i)              INS_GETx(i, IBx_MASK, 0)
-#define IGET_sBx(i)             (IGET_Bx(i) - IsBx_MAX)
+#define IGET_sBx(i)             ((int32_t)((binstruction)(i) & IBx_MASK) - IsBx_MAX)
 
 /* set field */
 #define ISET_OP(i)              INS_SETx(i, IOP_MASK, IOP_POS)
@@ -63,7 +63,7 @@
 #define ISET_RKB(i)             INS_SETx(i, IRKB_MASK, IRKB_POS)
 #define ISET_RKC(i)             INS_SETx(i, IRKC_MASK, IRKC_POS)
 #define ISET_Bx(i)              INS_SETx(i, IBx_MASK, 0)
-#define ISET_sBx(i)             (ISET_Bx(cast_int(i) + IsBx_MAX))
+#define ISET_sBx(i)             (ISET_Bx((int32_t)(i) + IsBx_MAX))
 
 typedef enum {
     #define OPCODE(opc) OP_##opc

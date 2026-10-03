@@ -62,7 +62,18 @@ static int popcount(uint32_t n)
     return n;
 }
 
-#error "unsupport compiler for ffs()"
+static int ffs(uint32_t value)
+{
+    int bit = 1;
+    if (value == 0) {
+        return 0;
+    }
+    while ((value & 1u) == 0) {
+        value >>= 1;
+        ++bit;
+    }
+    return bit;
+}
 #endif
 
 static void* malloc_from_pool(bvm *vm, size_t size);

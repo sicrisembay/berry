@@ -73,7 +73,7 @@ static int codeABC(bfuncinfo *finfo, bopcode op, int a, int b, int c)
         | ISET_RA(a) | ISET_RKB(b) | ISET_RKC(c));
 }
 
-static int codeABx(bfuncinfo *finfo, bopcode op, int a, int bx)
+static int codeABx(bfuncinfo *finfo, bopcode op, int a, uint32_t bx)
 {
     return codeinst(finfo, ISET_OP(op) | ISET_RA(a) | ISET_Bx(bx));
 }
