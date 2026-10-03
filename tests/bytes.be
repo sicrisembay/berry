@@ -356,6 +356,57 @@ assert(a.geti(0, -3) == -8388608)
 a = bytes("FFFF7F")
 assert(a.geti(0, 3) == 0x7FFFFF)
 
+# Exhaustive logical-octet append, read, set, and boundary behavior.
+phase5_octets = bytes()
+phase5_octets.resize(260)  # bytes.add reserves four octets before each append
+phase5_octets.clear()
+var phase5_i = 0
+while phase5_i < 256
+    phase5_octets.add(phase5_i)
+    phase5_i += 1
+end
+assert(phase5_octets.size() == 256)
+phase5_i = 0
+while phase5_i < 256
+    assert(phase5_octets.get(phase5_i) == phase5_i)
+    phase5_octets.set(phase5_i, phase5_i + 256)
+    assert(phase5_octets.get(phase5_i) == phase5_i)
+    phase5_i += 1
+end
+assert(phase5_octets.get(0) == 0)
+assert(phase5_octets.get(-1) == 255)
+assert(phase5_octets.get(256) == 0)
+assert(phase5_octets.get(255, 2) == 0)
+phase5_octets.set(256, 0x55)
+assert(phase5_octets.size() == 256)
+assert(phase5_octets.get(255) == 255)
+
+# Signed 8/16-bit boundaries and 16/24/32-bit endian set/get pairs.
+phase5_endian = bytes()
+phase5_endian.resize(4)
+phase5_endian.set(0, 0x1234, 2)
+assert(phase5_endian.tohex() == '34120000')
+assert(phase5_endian.get(0, 2) == 0x1234)
+phase5_endian.set(0, 0x1234, -2)
+assert(phase5_endian.tohex() == '12340000')
+assert(phase5_endian.get(0, -2) == 0x1234)
+phase5_endian.set(0, 0x123456, 3)
+assert(phase5_endian.tohex() == '56341200')
+assert(phase5_endian.get(0, 3) == 0x123456)
+phase5_endian.set(0, 0x123456, -3)
+assert(phase5_endian.tohex() == '12345600')
+assert(phase5_endian.get(0, -3) == 0x123456)
+phase5_endian.set(0, 0x12345678, 4)
+assert(phase5_endian.tohex() == '78563412')
+assert(phase5_endian.get(0, 4) == 0x12345678)
+phase5_endian.set(0, 0x12345678, -4)
+assert(phase5_endian.tohex() == '12345678')
+assert(phase5_endian.get(0, -4) == 0x12345678)
+phase5_endian.set(0, 0x80, 1)
+assert(phase5_endian.geti(0, 1) == -128)
+phase5_endian.set(0, 0x8000, 2)
+assert(phase5_endian.geti(0, 2) == -32768)
+
 # append base64
 b = bytes("AABBCC")
 c = bytes("001122")
