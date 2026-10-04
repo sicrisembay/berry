@@ -37,11 +37,10 @@ static const char* const token_strings[] = {
     "<", "<=", "==", "!=", ">", ">=", "&", "|",
     "^", "<<", ">>", "..", "&&", "||", "!", "~",
     "(", "(", ")", "[", "]", "{", "}", ".", ",", ";",
-    ":", "?", "->", "if", "elif", "else", "while",
+    ":", "?", "->", ":=", "if", "elif", "else", "while",
     "for", "def", "end", "class", "break", "continue",
     "return", "true", "false", "nil", "var", "do",
     "import", "as", "try", "except", "raise", "static",
-    ":=",
 };
 
 void be_lexerror(blexer *lexer, const char *msg)
